@@ -1,0 +1,9 @@
+#代码引用地址
+keijiro https://github.com/keijiro/MidiAnimationTrack
+基于keijiro大神的项目修改 支持在Timeline里对材质球的float属性和color属性进行控制
+支持拖入renderer对象 展示组件下所有的shareMaterial
+支持只拖入Material
+renderer对象的优先级会高于单独的material 拖入renderer后会只展示shareMaterial
+
+##需要注意的点
+无法区分shader里的int和float 尽管做了判断 但实际测试是无法区分的
