@@ -14,6 +14,13 @@ public class MaterialPlayableTrack : TrackAsset
     {
         var mixer = ScriptPlayable<MaterialPlayableMixer>.Create(graph, template, inputCount);
         resolver = mixer.GetGraph().GetResolver();
+        float timelineEndTime = 0;
+        var timeline = (graph.GetResolver() as PlayableDirector).playableAsset as TimelineAsset;
+        IEnumerable<TrackAsset> tracks = timeline.GetRootTracks();
+        foreach (TrackAsset track in tracks) {
+            timelineEndTime = Mathf.Max(timelineEndTime, (float)track.end);
+        }
+        mixer.GetBehaviour().endTime = timelineEndTime;
         return mixer;
     }
 
