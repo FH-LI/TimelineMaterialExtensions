@@ -8,6 +8,7 @@ public class MaterialPlayableMixer : PlayableBehaviour
 {
     public MaterialControl[] controls = new MaterialControl[0];
     MaterialControlAction[] _actions;
+    private DirectorWrapMode mode;
     public float endTime;
 
     public override void OnGraphStart(Playable playable)
@@ -42,13 +43,15 @@ public class MaterialPlayableMixer : PlayableBehaviour
 
             if (acc > 0)
                 _actions[ci]?.Invoke(Vector4.Lerp(ctrl.vector0, ctrl.vector1, acc));
-            else if (playable.GetTime() < endTime)
+            else if (mode != DirectorWrapMode.Hold || (mode == DirectorWrapMode.Hold && playable.GetTime() < endTime))
                 _actions[ci]?.Invoke(ctrl.originValue);
         }
     }
 
     public override void OnBehaviourPlay(Playable playable, FrameData info)
     {
+        var resolver = playable.GetGraph().GetResolver();
+        mode = (resolver as PlayableDirector).extrapolationMode;
         InitMaterialProperty();
     }
 
