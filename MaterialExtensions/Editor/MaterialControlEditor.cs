@@ -61,14 +61,17 @@ sealed class MaterialControlInternalDrawer
     string[] _propertyTypes;
     string[] _materialNames;
 
-    string renderMaterialName;
     Material[] _renderMaterials;
 
     Rect _baseRect;
     Rect _rect;
 
+    int matIndexindex = 0;
+
     static readonly GUIContent _labelRender = new GUIContent("Render");
     static readonly GUIContent _labelMaterial = new GUIContent("Material");
+    static readonly GUIContent _color0Label = new GUIContent("Color at 0");
+    static readonly GUIContent _color1Label = new GUIContent("Color at 0");
 
     public MaterialControlInternalDrawer(SerializedProperty property)
     {
@@ -123,8 +126,8 @@ sealed class MaterialControlInternalDrawer
             if (renderer)
             {
                 _materialNames = renderer.sharedMaterials.Select(m => m.name).ToArray();
-                renderMaterialName = _materialNames[0];
                 _renderMaterials = renderer.sharedMaterials;
+                matIndexindex = 0;
             }
             else
             {
@@ -136,7 +139,6 @@ sealed class MaterialControlInternalDrawer
         if (_materialNames != null && _materialNames.Length > 0)
         {
             EditorGUI.BeginChangeCheck();
-            int matIndexindex = System.Array.IndexOf(_materialNames, renderMaterialName);
             matIndexindex = EditorGUI.Popup(_rect, "Materials", matIndexindex, _materialNames);
             _targetMaterial.exposedReferenceValue = _renderMaterials[matIndexindex];
             if (EditorGUI.EndChangeCheck())
@@ -230,11 +232,7 @@ sealed class MaterialControlInternalDrawer
 
     void CachePropertiesInTargetComponent()
     {
-        var itr = (new SerializedObject(TargetMaterial)).GetIterator();
-
         var pnames = new List<string>();
-        var labels = new List<string>();
-        var fnames = new List<string>();
         var types = new List<string>();
 
         var so = new SerializedObject(TargetMaterial);
@@ -255,6 +253,7 @@ sealed class MaterialControlInternalDrawer
         {
             string colorPropName = sp.GetArrayElementAtIndex(i).FindPropertyRelative("first").stringValue;
             pnames.Add(colorPropName);
+
             types.Add(MaterialDefind.COLOR);
         }
 
@@ -302,13 +301,13 @@ sealed class MaterialControlInternalDrawer
         else if (type == MaterialDefind.COLOR)
         {
             EditorGUI.BeginChangeCheck();
-            v0 = EditorGUI.ColorField(_rect, "Color at 0", v0);
+            v0 = EditorGUI.ColorField(_rect, _color0Label, v0, true, true, true);
             if (EditorGUI.EndChangeCheck()) _vector0.vector4Value = v0;
 
             MoveRectToNextLine();
 
             EditorGUI.BeginChangeCheck();
-            v1 = EditorGUI.ColorField(_rect, "Color at 1", v1);
+            v1 = EditorGUI.ColorField(_rect, _color1Label, v1, true, true, true);
             if (EditorGUI.EndChangeCheck()) _vector1.vector4Value = v1;
 
             MoveRectToNextLine();
